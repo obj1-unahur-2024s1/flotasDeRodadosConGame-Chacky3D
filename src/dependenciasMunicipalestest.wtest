@@ -1,0 +1,75 @@
+import vehiculos.*
+import dependenciasMunicipales.*
+
+test "Etapa 1"{
+
+	const deportes = new DependenciaMunicipal(cantidadDeEmpleados = 45)
+	const cultura = new DependenciaMunicipal(cantidadDeEmpleados = 31)
+	
+	const cachito = new Corsa(color = "Rojo")
+	const corsa1 = new Corsa(color = "Azul")
+	const corsa2 = new Corsa(color = "Verde")
+	const kwid1 = new RenaultKwid(tieneTanqueAdicional = true)
+	const especial1 = new AutoEspecial(capacidadDePasajeros = 5, velocidadMaxima = 160, peso = 1200, color = "Beige")
+	
+	const kwid2 = new RenaultKwid(tieneTanqueAdicional = true)
+	const kwid3 = new RenaultKwid(tieneTanqueAdicional = true)
+	const kwid4 = new RenaultKwid()
+	trafic.cambiarInterior()
+	trafic.cambiarMotor()
+	
+	deportes.agregarAFlota(cachito)
+	deportes.agregarAFlota(corsa1)
+	deportes.agregarAFlota(corsa2)
+	deportes.agregarAFlota(kwid1)
+	deportes.agregarAFlota(especial1)
+	
+	cultura.agregarAFlota(cachito)
+	cultura.agregarAFlota(kwid2)
+	cultura.agregarAFlota(kwid3)
+	cultura.agregarAFlota(kwid4)
+	cultura.agregarAFlota(trafic)
+	
+	assert.equals(6450, deportes.pesoTotalFlota())
+	assert.that(deportes.estaBienEquipada())
+	assert.equals(7, deportes.capacidadTotalEnColor("Azul"))
+	assert.equals("Beige", deportes.colorDelRodadoMasRapido())
+	assert.equals(25, deportes.capacidadFaltante())
+	assert.that(deportes.esGrande())
+	
+	assert.equals(5200 + trafic.peso(), cultura.pesoTotalFlota())
+	assert.notThat(cultura.estaBienEquipada())
+	assert.equals(12, cultura.capacidadTotalEnColor("Blanco"))
+	assert.equals("Rojo", cultura.colorDelRodadoMasRapido())
+	assert.equals(5, cultura.capacidadFaltante())
+	assert.notThat(cultura.esGrande())
+
+}
+
+test "Etapa 2 y 3"{
+	
+	const cachito = new Corsa(color = "Rojo")
+	const pedido1 = new Pedido(distanciaARecorrer = 960, tiempoMaximo = 8, cantidadDePasajeros = 4, coloresIncompatibles = #{"Azul", "Negro"})
+	assert.that(pedido1.puedeSatisfacerUnPedido(cachito))
+	const pedido2 = new Pedido(distanciaARecorrer = 960, tiempoMaximo = 8, cantidadDePasajeros = 4, coloresIncompatibles = #{"Azul", "Negro", "Rojo"})
+	assert.notThat(pedido2.puedeSatisfacerUnPedido(cachito))
+	const pedido3 = new Pedido(distanciaARecorrer = 960, tiempoMaximo = 8, cantidadDePasajeros = 6, coloresIncompatibles = #{"Azul", "Negro"})
+	assert.notThat(pedido3.puedeSatisfacerUnPedido(cachito))
+	const pedido4 = new Pedido(distanciaARecorrer = 960, tiempoMaximo = 6, cantidadDePasajeros = 4, coloresIncompatibles = #{"Azul", "Negro"})
+	assert.notThat(pedido4.puedeSatisfacerUnPedido(cachito))
+	const economia = new DependenciaMunicipal(cantidadDeEmpleados = 30)
+	economia.agregarAFlota(cachito)
+	economia.agregar(pedido1)
+	economia.agregar(pedido2)
+	economia.agregar(pedido3)
+	economia.agregar(pedido4)
+	assert.equals(#{pedido2, pedido3, pedido4}, economia.pedidosImposiblesDeSatisfacer())
+	assert.that(economia.todosIncompatiblesCon("Azul"))
+	assert.notThat(economia.todosIncompatiblesCon("Rojo"))
+	economia.relajarPedidos()
+	assert.equals(9, pedido1.tiempoMaximo())
+	assert.equals(9, pedido2.tiempoMaximo())
+	assert.equals(9, pedido3.tiempoMaximo())
+	assert.equals(7, pedido4.tiempoMaximo())
+	
+}
